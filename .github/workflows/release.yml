@@ -1,0 +1,29 @@
+name: Build & Release ZIP
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare ZIP structure
+        run: |
+          PLUG=single
+          mkdir -p build/simple-preloader-infortop
+          cp -R simple-preloader-infortop.php README.md LICENSE .gitignore .gitattributes build/simple-preloader-infortop/
+          cd build
+          zip -r simple-preloader-infortop.zip simple-preloader-infortop
+          ls -lah
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/simple-preloader-infortop.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
